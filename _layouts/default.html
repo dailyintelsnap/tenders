@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% seo %}
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <header class="bg-slate-900 text-white border-b-4 border-blue-500">
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <h1 class="text-4xl font-extrabold tracking-tight">
+                <a href="{{ site.baseurl }}/">Daily Intel <span class="text-blue-400">Snap</span></a>
+            </h1>
+            <p class="mt-2 text-slate-400 text-lg">Automated Government Tender Intelligence.</p>
+        </div>
+    </header>
+    <main class="max-w-6xl mx-auto px-6 py-8 min-h-screen">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            {{ content }}
+        </div>
+    </main>
+    <footer class="bg-slate-900 text-slate-500 py-8 text-center text-sm">
+        <p>&copy; 2026 Daily Intel Snap. Automated via OpenClaw NAS Agent.</p>
+    </footer>
+</body>
+</html>

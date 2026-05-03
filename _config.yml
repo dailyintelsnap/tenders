@@ -1,0 +1,10 @@
+title: "Daily Intel Snap"
+description: "Australian Government Tender Intelligence"
+url: "https://dailyintelsnap.github.io"
+baseurl: "/tenders"
+plugins:
+  - jekyll-seo-tag
+collections:
+  data:
+    output: true
+    permalink: /tenders/:path/
