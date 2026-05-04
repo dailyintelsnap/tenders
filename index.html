@@ -2,15 +2,41 @@
 layout: default
 title: "Latest Opportunities"
 ---
-<div class="flex justify-between items-center mb-8 border-b pb-4">
-    <h2 class="text-2xl font-bold text-gray-800">Live Intel Feed</h2>
-    <span class="text-sm bg-blue-100 text-blue-800 py-1 px-3 rounded-full font-semibold">Updated Daily at 05:00 AEST</span>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">Live Intel Feed</h2>
+        <p class="text-sm text-gray-500 mt-1">Sorted by Newest First</p>
+    </div>
+    <span class="text-sm bg-blue-100 text-blue-800 py-1 px-3 rounded-full font-semibold whitespace-nowrap">Updated Daily at 05:00 AEST</span>
 </div>
 
-<div class="grid gap-6">
-  {% assign tender_pages = site.pages | where_exp: "item", "item.path contains 'data/'" %}
-  {% for tender in tender_pages reversed %}
-    <a href="{{ tender.url | relative_url }}" class="block group">
+<div class="mb-8 flex flex-col md:flex-row gap-4 bg-gray-100 p-4 rounded-lg border border-gray-200">
+    <input type="text" id="searchInput" placeholder="Search by keyword, agency, or ID..." class="flex-1 p-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+    
+    <select id="stateFilter" class="p-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 md:w-48">
+        <option value="ALL">All States/Regions</option>
+        <option value="FED">Federal (FED)</option>
+        <option value="VIC">Victoria (VIC)</option>
+        <option value="NSW">New South Wales (NSW)</option>
+        <option value="QLD">Queensland (QLD)</option>
+        <option value="WA">Western Australia (WA)</option>
+        <option value="SA">South Australia (SA)</option>
+        <option value="ACT">ACT</option>
+        <option value="TAS">Tasmania (TAS)</option>
+        <option value="NT">Northern Territory (NT)</option>
+    </select>
+</div>
+
+<div class="grid gap-6" id="tenderGrid">
+  {% assign tender_pages = site.pages | where_exp: "item", "item.path contains 'data/'" | sort: "publish_date" | reverse %}
+  
+  {% for tender in tender_pages %}
+    <a href="{{ tender.url | relative_url }}" class="tender-card block group" 
+       data-title="{{ tender.title | downcase }}" 
+       data-agency="{{ tender.agency | downcase }}" 
+       data-id="{{ tender.atm_id | downcase }}" 
+       data-state="{{ tender.category | upcase }}">
+        
         <article class="p-6 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition bg-white">
             <div class="flex justify-between items-start mb-3">
                 <div class="flex gap-2">
@@ -20,7 +46,10 @@ title: "Latest Opportunities"
                         <span class="text-xs font-bold px-2 py-1 bg-green-100 text-green-800 rounded border border-green-200">AWARDED</span>
                     {% endif %}
                 </div>
-                <span class="text-sm text-gray-500 font-medium">Closes: {{ tender.closing_date }}</span>
+                <div class="text-right">
+                    <span class="block text-sm font-semibold text-gray-800">Posted: {{ tender.publish_date }}</span>
+                    <span class="block text-xs text-red-500 font-medium mt-1">Closes: {{ tender.closing_date }}</span>
+                </div>
             </div>
             
             <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 mb-1">{{ tender.title }}</h3>
@@ -31,3 +60,50 @@ title: "Latest Opportunities"
     </a>
   {% endfor %}
 </div>
+
+<div id="noResults" class="hidden text-center py-12 text-gray-500">
+    <p class="text-lg font-semibold">No tenders match your search criteria.</p>
+    <p class="text-sm">Try adjusting your filters or search terms.</p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const stateFilter = document.getElementById('stateFilter');
+        const cards = document.querySelectorAll('.tender-card');
+        const noResults = document.getElementById('noResults');
+
+        function filterTenders() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const stateValue = stateFilter.value;
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                const agency = card.getAttribute('data-agency');
+                const id = card.getAttribute('data-id');
+                const state = card.getAttribute('data-state');
+
+                const matchesSearch = title.includes(searchTerm) || agency.includes(searchTerm) || id.includes(searchTerm);
+                const matchesState = stateValue === 'ALL' || state === stateValue;
+
+                if (matchesSearch && matchesState) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show or hide the "No results" message
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        searchInput.addEventListener('input', filterTenders);
+        stateFilter.addEventListener('change', filterTenders);
+    });
+</script>
