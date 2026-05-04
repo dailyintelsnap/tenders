@@ -4,7 +4,3 @@ url: "https://dailyintelsnap.github.io"
 baseurl: "/tenders"
 plugins:
   - jekyll-seo-tag
-collections:
-  data:
-    output: true
-    permalink: /tenders/:path/
